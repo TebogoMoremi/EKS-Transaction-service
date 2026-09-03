@@ -19,13 +19,9 @@ import com.tebogo.eks.validation.CompositeTransactionValidator;
 public class TransactionService {
 
     private final CompositeTransactionValidator validator;
-
     private final DroolsRuleService ruleService;
-
     private final WeatherClient weatherClient;
-
     private final TransactionRepository repository;
-
 
     public TransactionService(
             CompositeTransactionValidator validator,
@@ -39,52 +35,29 @@ public class TransactionService {
         this.repository = repository;
     }
 
-
     @BusinessOperation("create-transaction")
     public PaymentTransaction create(
             TransactionRequest request) {
 
-        /*
-         * STEP 1:
-         * Validate incoming request
-         */
+        // 1. Validate request
         validator.validate(request);
 
-
-        /*
-         * STEP 2:
-         * Get UUID created by CorrelationIdFilter
-         */
+        // 2. Retrieve UUID created by the REST filter
         String correlationId =
-                ThreadContext.get(
-                        "correlationId"
-                );
+                ThreadContext.get("correlationId");
 
-
-        /*
-         * STEP 3:
-         * Execute Drools rules
-         */
+        // 3. Execute Drools rules
         TransactionRuleFact ruleResult =
                 ruleService.evaluate(request);
 
-
-        /*
-         * STEP 4:
-         * Check Drools decision
-         */
+        // 4. Reject transaction if Drools says no
         if (!ruleResult.isApproved()) {
-
             throw new RuntimeException(
                     "rules.amount.limit"
             );
         }
 
-
-        /*
-         * STEP 5:
-         * Call weather service through Camel
-         */
+        // 5. Call weather API through Apache Camel
         String weatherJson =
                 weatherClient.getWeather(
                         request.location().latitude(),
@@ -92,11 +65,7 @@ public class TransactionService {
                         correlationId
                 );
 
-
-        /*
-         * STEP 6:
-         * Create Initiator Party
-         */
+        // 6. Create initiator
         InitiatorParty initiator =
                 new InitiatorParty();
 
@@ -105,19 +74,14 @@ public class TransactionService {
         );
 
         initiator.setAccountReference(
-                request.initiator()
-                        .accountReference()
+                request.initiator().accountReference()
         );
 
         initiator.setChannel(
                 request.initiator().channel()
         );
 
-
-        /*
-         * STEP 7:
-         * Create Receiver Party
-         */
+        // 7. Create receiver
         ReceiverParty receiver =
                 new ReceiverParty();
 
@@ -126,19 +90,14 @@ public class TransactionService {
         );
 
         receiver.setAccountReference(
-                request.receiver()
-                        .accountReference()
+                request.receiver().accountReference()
         );
 
         receiver.setDestination(
                 request.receiver().destination()
         );
 
-
-        /*
-         * STEP 8:
-         * Create correct transaction subtype
-         */
+        // 8. Create correct transaction subtype
         PaymentTransaction transaction;
 
         if (request.type() == TransactionType.CASH_IN) {
@@ -164,11 +123,7 @@ public class TransactionService {
             transaction = cashOut;
         }
 
-
-        /*
-         * STEP 9:
-         * Populate common transaction fields
-         */
+        // 9. Set common fields
         transaction.setCorrelationId(
                 correlationId
         );
@@ -201,13 +156,7 @@ public class TransactionService {
                 weatherJson
         );
 
-
-        /*
-         * STEP 10:
-         * Save using JPA/Hibernate
-         */
-        return repository.save(
-                transaction
-        );
+        // 10. Persist through Hibernate/JPA
+        return repository.save(transaction);
     }
 }
