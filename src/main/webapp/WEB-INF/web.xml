@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app
+    xmlns="https://jakarta.ee/xml/ns/jakartaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        https://jakarta.ee/xml/ns/jakartaee
+        https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+    version="6.1">
+
+    <listener>
+        <listener-class>
+            com.tebogo.eks.bootstrap.BootstrapListener
+        </listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>
+            JerseyServlet
+        </servlet-name>
+
+        <servlet-class>
+            org.glassfish.jersey.servlet.ServletContainer
+        </servlet-class>
+
+        <init-param>
+            <param-name>
+                jersey.config.server.provider.packages
+            </param-name>
+
+            <param-value>
+                com.tebogo.eks.api,
+                com.tebogo.eks.error,
+                com.tebogo.eks.logging
+            </param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>
+                jersey.config.server.provider.classnames
+            </param-name>
+
+            <param-value>
+                org.glassfish.jersey.jackson.JacksonFeature
+            </param-value>
+        </init-param>
+
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>
+            JerseyServlet
+        </servlet-name>
+
+        <url-pattern>
+            /api/*
+        </url-pattern>
+    </servlet-mapping>
+
+</web-app>
