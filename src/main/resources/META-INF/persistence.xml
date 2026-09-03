@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence
+    xmlns="https://jakarta.ee/xml/ns/persistence"
+    version="3.2">
+
+    <persistence-unit
+        name="transactionsPU"
+        transaction-type="RESOURCE_LOCAL">
+
+        <provider>
+            org.hibernate.jpa.HibernatePersistenceProvider
+        </provider>
+
+        <class>com.tebogo.eks.model.Party</class>
+        <class>com.tebogo.eks.model.InitiatorParty</class>
+        <class>com.tebogo.eks.model.ReceiverParty</class>
+
+        <class>com.tebogo.eks.model.PaymentTransaction</class>
+        <class>com.tebogo.eks.model.CashInTransaction</class>
+        <class>com.tebogo.eks.model.CashOutTransaction</class>
+
+        <properties>
+
+            <property
+                name="hibernate.hbm2ddl.auto"
+                value="update" />
+
+            <property
+                name="hibernate.show_sql"
+                value="true" />
+
+            <property
+                name="hibernate.format_sql"
+                value="true" />
+
+        </properties>
+
+    </persistence-unit>
+
+</persistence>

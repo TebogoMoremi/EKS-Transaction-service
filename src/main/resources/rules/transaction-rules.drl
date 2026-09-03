@@ -1,0 +1,41 @@
+package rules
+
+import com.tebogo.eks.rules.TransactionRuleFact
+
+
+rule "Reject very large transaction"
+
+when
+
+    $transaction : TransactionRuleFact(
+        amount != null,
+        amount > 10000
+    )
+
+then
+
+    $transaction.setApproved(false);
+
+    $transaction.setDecision(
+        "AMOUNT_LIMIT_EXCEEDED"
+    );
+
+end
+
+
+rule "High risk cash out"
+
+when
+
+    $transaction : TransactionRuleFact(
+        type == "CASH_OUT",
+        amount != null,
+        amount > 5000,
+        approved == true
+    )
+
+then
+
+    $transaction.setRiskLevel("HIGH");
+
+end
