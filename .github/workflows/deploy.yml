@@ -90,7 +90,11 @@ jobs:
             --region "$AWS_REGION" \
             --name "$EKS_CLUSTER"
 
-          kubectl get nodes
+          kubectl get deployment "$K8S_DEPLOYMENT" \
+            -n "$K8S_NAMESPACE"
+
+          kubectl get pods \
+            -n "$K8S_NAMESPACE"
 
       - name: Deploy to EKS
         run: |
