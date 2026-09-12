@@ -124,6 +124,15 @@
 
         </junit.version>
 
+
+        <!-- Apache CXF / SOAP -->
+
+        <cxf.version>
+
+            4.2.2
+
+        </cxf.version>
+
     </properties>
 
 
@@ -682,6 +691,62 @@
         </dependency>
 
 
+
+        <!-- ================================================== -->
+
+        <!-- SOAP / APACHE CXF                                  -->
+
+        <!-- ================================================== -->
+
+        <!-- JAX-WS SOAP frontend -->
+
+        <dependency>
+
+            <groupId>
+
+                org.apache.cxf
+
+            </groupId>
+
+            <artifactId>
+
+                cxf-rt-frontend-jaxws
+
+            </artifactId>
+
+            <version>
+
+                ${cxf.version}
+
+            </version>
+
+        </dependency>
+
+
+        <!-- HTTP transport used by CXF inside Tomcat -->
+
+        <dependency>
+
+            <groupId>
+
+                org.apache.cxf
+
+            </groupId>
+
+            <artifactId>
+
+                cxf-rt-transports-http
+
+            </artifactId>
+
+            <version>
+
+                ${cxf.version}
+
+            </version>
+
+        </dependency>
+
     </dependencies>
 
 
@@ -1123,38 +1188,61 @@
 
 
                         <!-- Weather API Mock -->
+
                         <image>
+
                             <alias>weather-mock</alias>
+
                             <name>wiremock/wiremock:3.13.2</name>
 
                             <run>
+
                                 <containerNamePattern>weather-mock</containerNamePattern>
 
                                 <ports>
+
                                     <port>8089:8080</port>
+
                                 </ports>
 
                                 <network>
+
                                     <mode>custom</mode>
+
                                     <name>eks-dev</name>
+
                                     <alias>weather-mock</alias>
+
                                 </network>
 
                                 <volumes>
+
                                     <bind>
+
                                         <volume>${project.basedir}/src/test/resources/wiremock:/home/wiremock:ro</volume>
+
                                     </bind>
+
                                 </volumes>
 
                                 <wait>
+
                                     <http>
+
                                         <url>http://localhost:8089/__admin/mappings</url>
+
                                         <method>GET</method>
+
                                         <status>200</status>
+
                                     </http>
+
                                     <time>30000</time>
+
                                 </wait>
+
                             </run>
+
                         </image>
 
                         <!-- EKS Transaction Service -->
@@ -1189,8 +1277,9 @@
 
                                     <DB_PASSWORD>ekspassword</DB_PASSWORD>
 
-                                
+
                                     <WEATHER_BASE_URL>http://weather-mock:8080</WEATHER_BASE_URL>
+
 </env>
 
                                 <network>
@@ -1207,8 +1296,9 @@
 
                                     <container>eks-postgres</container>
 
-                                
+
                                     <container>weather-mock</container>
+
 </dependsOn>
 
                                 <wait>

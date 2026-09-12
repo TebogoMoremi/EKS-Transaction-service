@@ -8,14 +8,22 @@
         https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
     version="6.1">
 
+    <!-- ================================================== -->
+    <!-- APPLICATION BOOTSTRAP                              -->
+    <!-- ================================================== -->
+
     <listener>
         <listener-class>
             com.tebogo.eks.bootstrap.BootstrapListener
         </listener-class>
     </listener>
 
-    <servlet>
 
+    <!-- ================================================== -->
+    <!-- REST / JERSEY                                      -->
+    <!-- ================================================== -->
+
+    <servlet>
         <servlet-name>
             JerseyServlet
         </servlet-name>
@@ -24,7 +32,7 @@
             org.glassfish.jersey.servlet.ServletContainer
         </servlet-class>
 
-        <!-- Scan our REST resources, filters and providers -->
+        <!-- Scan REST resources, filters and providers -->
         <init-param>
             <param-name>
                 jersey.config.server.provider.packages
@@ -53,11 +61,9 @@
         </init-param>
 
         <load-on-startup>1</load-on-startup>
-
     </servlet>
 
     <servlet-mapping>
-
         <servlet-name>
             JerseyServlet
         </servlet-name>
@@ -65,7 +71,33 @@
         <url-pattern>
             /api/*
         </url-pattern>
+    </servlet-mapping>
 
+
+    <!-- ================================================== -->
+    <!-- SOAP / APACHE CXF                                  -->
+    <!-- ================================================== -->
+
+    <servlet>
+        <servlet-name>
+            TransactionSoapServlet
+        </servlet-name>
+
+        <servlet-class>
+            com.tebogo.eks.soap.TransactionSoapServlet
+        </servlet-class>
+
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>
+            TransactionSoapServlet
+        </servlet-name>
+
+        <url-pattern>
+            /soap/*
+        </url-pattern>
     </servlet-mapping>
 
 </web-app>
