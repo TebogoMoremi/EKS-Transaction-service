@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-transactions-service
+  namespace: eks-transactions
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: eks-transactions-service
+
+  template:
+    metadata:
+      labels:
+        app: eks-transactions-service
+
+    spec:
+      containers:
+        - name: eks-transactions-service
+
+          image: 263953131930.dkr.ecr.af-south-1.amazonaws.com/eks-transactions-service:1.0.0
+
+          ports:
+            - containerPort: 8080
+
+          env:
+            - name: DB_URL
+              value: jdbc:postgresql://postgres:5432/transactions
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "384Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            failureThreshold: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eks-transactions-service
+  namespace: eks-transactions
+spec:
+  selector:
+    app: eks-transactions-service
+
+  ports:
+    - port: 8080
+      targetPort: 8080
+
+  type: ClusterIP
