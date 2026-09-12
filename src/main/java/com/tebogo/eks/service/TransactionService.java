@@ -15,6 +15,7 @@ import com.tebogo.eks.persistence.TransactionRepository;
 import com.tebogo.eks.rules.DroolsRuleService;
 import com.tebogo.eks.rules.TransactionRuleFact;
 import com.tebogo.eks.validation.CompositeTransactionValidator;
+import com.tebogo.eks.error.BusinessRuleException;
 
 public class TransactionService {
 
@@ -52,7 +53,8 @@ public class TransactionService {
 
         // 4. Reject transaction if Drools says no
         if (!ruleResult.isApproved()) {
-            throw new RuntimeException(
+
+            throw new BusinessRuleException(
                     "rules.amount.limit"
             );
         }

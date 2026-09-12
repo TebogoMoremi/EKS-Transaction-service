@@ -13,8 +13,8 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
-public class ValidationExceptionMapper
-        implements ExceptionMapper<ValidationException> {
+public class IntegrationExceptionMapper
+        implements ExceptionMapper<IntegrationException> {
 
     private final MessageResolver messageResolver =
             new MessageResolver();
@@ -24,7 +24,7 @@ public class ValidationExceptionMapper
 
     @Override
     public Response toResponse(
-            ValidationException exception) {
+            IntegrationException exception) {
 
         Locale locale = getLocale();
 
@@ -35,20 +35,17 @@ public class ValidationExceptionMapper
                         exception.getArguments()
                 );
 
-        String correlationId =
-                ThreadContext.get("correlationId");
-
-        ErrorResponse errorResponse =
+        ErrorResponse response =
                 new ErrorResponse(
                         Instant.now().toString(),
-                        correlationId,
+                        ThreadContext.get("correlationId"),
                         exception.getErrorCode(),
                         message
                 );
 
         return Response
-                .status(Response.Status.BAD_REQUEST)
-                .entity(errorResponse)
+                .status(Response.Status.BAD_GATEWAY)
+                .entity(response)
                 .build();
     }
 

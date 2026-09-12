@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
+
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
          xsi:schemaLocation="
+
             http://maven.apache.org/POM/4.0.0
+
             https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
 
     <!-- ====================================================== -->
+
     <!-- PROJECT INFORMATION                                    -->
+
     <!-- ====================================================== -->
 
     <groupId>com.tebogo.eks</groupId>
@@ -23,126 +29,180 @@
 
 
     <!-- ====================================================== -->
+
     <!-- VERSIONS                                               -->
+
     <!-- ====================================================== -->
 
     <properties>
 
         <!-- Java -->
+
         <maven.compiler.release>25</maven.compiler.release>
 
         <project.build.sourceEncoding>
+
             UTF-8
+
         </project.build.sourceEncoding>
 
         <project.reporting.outputEncoding>
+
             UTF-8
+
         </project.reporting.outputEncoding>
 
 
         <!-- Hibernate -->
+
         <hibernate.version>
+
             7.4.7.Final
+
         </hibernate.version>
 
 
         <!-- PostgreSQL -->
+
         <postgres.version>
+
             42.7.13
+
         </postgres.version>
 
 
         <!-- Jersey -->
+
         <jersey.version>
+
             4.0.2
+
         </jersey.version>
 
 
         <!-- Log4j -->
+
         <log4j.version>
+
             2.26.1
+
         </log4j.version>
 
 
         <!-- AspectJ -->
+
         <aspectj.version>
+
             1.9.25.1
+
         </aspectj.version>
 
 
         <!-- Apache Camel -->
+
         <camel.version>
+
             4.22.0
+
         </camel.version>
 
 
         <!-- Drools -->
+
         <drools.version>
+
             10.1.0
+
         </drools.version>
 
 
         <!-- JUnit -->
+
         <junit.version>
+
             6.1.1
+
         </junit.version>
 
     </properties>
 
 
     <!-- ====================================================== -->
+
     <!-- DEPENDENCIES                                           -->
+
     <!-- ====================================================== -->
 
     <dependencies>
 
 
         <!-- ================================================== -->
+
         <!-- TOMCAT / SERVLET                                  -->
+
         <!-- ================================================== -->
 
         <!--
+
             Tomcat supplies the Servlet implementation.
+
             Therefore this dependency must be "provided".
+
         -->
 
         <dependency>
 
             <groupId>
+
                 jakarta.servlet
+
             </groupId>
 
             <artifactId>
+
                 jakarta.servlet-api
+
             </artifactId>
 
             <version>
+
                 6.1.0
+
             </version>
 
             <scope>
+
                 provided
+
             </scope>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- REST API / JERSEY                                  -->
+
         <!-- ================================================== -->
 
         <dependency>
 
             <groupId>
+
                 org.glassfish.jersey.containers
+
             </groupId>
 
             <artifactId>
+
                 jersey-container-servlet
+
             </artifactId>
 
             <version>
+
                 ${jersey.version}
+
             </version>
 
         </dependency>
@@ -153,15 +213,21 @@
         <dependency>
 
             <groupId>
+
                 org.glassfish.jersey.inject
+
             </groupId>
 
             <artifactId>
+
                 jersey-hk2
+
             </artifactId>
 
             <version>
+
                 ${jersey.version}
+
             </version>
 
         </dependency>
@@ -172,78 +238,108 @@
         <dependency>
 
             <groupId>
+
                 org.glassfish.jersey.media
+
             </groupId>
 
             <artifactId>
+
                 jersey-media-json-jackson
+
             </artifactId>
 
             <version>
+
                 ${jersey.version}
+
             </version>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- JPA / HIBERNATE                                    -->
+
         <!-- ================================================== -->
 
         <dependency>
 
             <groupId>
+
                 org.hibernate.orm
+
             </groupId>
 
             <artifactId>
+
                 hibernate-core
+
             </artifactId>
 
             <version>
+
                 ${hibernate.version}
+
             </version>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- POSTGRESQL                                         -->
+
         <!-- ================================================== -->
 
         <dependency>
 
             <groupId>
+
                 org.postgresql
+
             </groupId>
 
             <artifactId>
+
                 postgresql
+
             </artifactId>
 
             <version>
+
                 ${postgres.version}
+
             </version>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- LOGGING                                            -->
+
         <!-- ================================================== -->
 
         <dependency>
 
             <groupId>
+
                 org.apache.logging.log4j
+
             </groupId>
 
             <artifactId>
+
                 log4j-api
+
             </artifactId>
 
             <version>
+
                 ${log4j.version}
+
             </version>
 
         </dependency>
@@ -252,75 +348,104 @@
         <dependency>
 
             <groupId>
+
                 org.apache.logging.log4j
+
             </groupId>
 
             <artifactId>
+
                 log4j-core
+
             </artifactId>
 
             <version>
+
                 ${log4j.version}
+
             </version>
 
         </dependency>
 
 
         <!--
+
             Apache Camel uses SLF4J internally.
 
             This bridge sends Camel/SLF4J logging
+
             through Log4j2.
+
         -->
 
         <dependency>
 
             <groupId>
+
                 org.apache.logging.log4j
+
             </groupId>
 
             <artifactId>
+
                 log4j-slf4j2-impl
+
             </artifactId>
 
             <version>
+
                 ${log4j.version}
+
             </version>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- ASPECTJ / AOP                                      -->
+
         <!-- ================================================== -->
 
         <!--
+
             Runtime required by:
 
             @Aspect
+
             @Around
+
             ProceedingJoinPoint
+
         -->
 
         <dependency>
 
             <groupId>
+
                 org.aspectj
+
             </groupId>
 
             <artifactId>
+
                 aspectjrt
+
             </artifactId>
 
             <version>
+
                 ${aspectj.version}
+
             </version>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- APACHE CAMEL                                       -->
+
         <!-- ================================================== -->
 
         <!-- Camel core -->
@@ -328,15 +453,21 @@
         <dependency>
 
             <groupId>
+
                 org.apache.camel
+
             </groupId>
 
             <artifactId>
+
                 camel-core
+
             </artifactId>
 
             <version>
+
                 ${camel.version}
+
             </version>
 
         </dependency>
@@ -347,15 +478,21 @@
         <dependency>
 
             <groupId>
+
                 org.apache.camel
+
             </groupId>
 
             <artifactId>
+
                 camel-http
+
             </artifactId>
 
             <version>
+
                 ${camel.version}
+
             </version>
 
         </dependency>
@@ -366,22 +503,30 @@
         <dependency>
 
             <groupId>
+
                 org.apache.camel
+
             </groupId>
 
             <artifactId>
+
                 camel-jackson
+
             </artifactId>
 
             <version>
+
                 ${camel.version}
+
             </version>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- DROOLS                                             -->
+
         <!-- ================================================== -->
 
         <!-- KIE API -->
@@ -389,86 +534,149 @@
         <dependency>
 
             <groupId>
+
                 org.kie
+
             </groupId>
 
             <artifactId>
+
                 kie-api
+
             </artifactId>
 
             <version>
+
                 ${drools.version}
+
             </version>
 
         </dependency>
 
 
         <!--
+
             Drools rule engine.
 
             Used for our .drl rules.
+
         -->
 
         <dependency>
 
             <groupId>
+
                 org.drools
+
             </groupId>
 
             <artifactId>
+
                 drools-engine
+
             </artifactId>
 
             <version>
+
                 ${drools.version}
+
             </version>
 
         </dependency>
 
 
         <!--
+
             Required because we will use:
 
             META-INF/kmodule.xml
+
         -->
 
         <dependency>
 
             <groupId>
+
                 org.drools
+
             </groupId>
 
             <artifactId>
+
                 drools-xml-support
+
             </artifactId>
 
             <version>
+
                 ${drools.version}
+
+            </version>
+
+        </dependency>
+
+
+        <!--
+
+            Required for runtime compilation of traditional DRL rules
+
+            when Drools falls back to the resource/classic model.
+
+        -->
+
+        <dependency>
+
+            <groupId>
+
+                org.drools
+
+            </groupId>
+
+            <artifactId>
+
+                drools-mvel
+
+            </artifactId>
+
+            <version>
+
+                ${drools.version}
+
             </version>
 
         </dependency>
 
 
         <!-- ================================================== -->
+
         <!-- JUNIT TESTING                                      -->
+
         <!-- ================================================== -->
 
         <dependency>
 
             <groupId>
+
                 org.junit.jupiter
+
             </groupId>
 
             <artifactId>
+
                 junit-jupiter
+
             </artifactId>
 
             <version>
+
                 ${junit.version}
+
             </version>
 
             <scope>
+
                 test
+
             </scope>
 
         </dependency>
@@ -478,7 +686,9 @@
 
 
     <!-- ====================================================== -->
+
     <!-- BUILD                                                  -->
+
     <!-- ====================================================== -->
 
     <build>
@@ -487,7 +697,9 @@
         <!-- WAR name -->
 
         <finalName>
+
             eks-transactions-service
+
         </finalName>
 
 
@@ -495,35 +707,49 @@
 
 
             <!-- ================================================== -->
+
             <!-- JAVA COMPILER                                      -->
+
             <!-- ================================================== -->
 
             <plugin>
 
                 <groupId>
+
                     org.apache.maven.plugins
+
                 </groupId>
 
                 <artifactId>
+
                     maven-compiler-plugin
+
                 </artifactId>
 
                 <version>
+
                     3.14.1
+
                 </version>
 
                 <configuration>
 
                     <release>
+
                         25
+
                     </release>
 
                     <parameters>
+
                         true
+
                     </parameters>
 
                     <encoding>
+
                         UTF-8
+
                     </encoding>
 
                 </configuration>
@@ -532,27 +758,37 @@
 
 
             <!-- ================================================== -->
+
             <!-- WAR                                                -->
+
             <!-- ================================================== -->
 
             <plugin>
 
                 <groupId>
+
                     org.apache.maven.plugins
+
                 </groupId>
 
                 <artifactId>
+
                     maven-war-plugin
+
                 </artifactId>
 
                 <version>
+
                     3.5.1
+
                 </version>
 
                 <configuration>
 
                     <failOnMissingWebXml>
+
                         false
+
                     </failOnMissingWebXml>
 
                 </configuration>
@@ -561,27 +797,37 @@
 
 
             <!-- ================================================== -->
+
             <!-- JUNIT / SUREFIRE                                   -->
+
             <!-- ================================================== -->
 
             <plugin>
 
                 <groupId>
+
                     org.apache.maven.plugins
+
                 </groupId>
 
                 <artifactId>
+
                     maven-surefire-plugin
+
                 </artifactId>
 
                 <version>
+
                     3.5.6
+
                 </version>
 
                 <configuration>
 
                     <useModulePath>
+
                         false
+
                     </useModulePath>
 
                 </configuration>
@@ -590,21 +836,83 @@
 
 
             <!-- ================================================== -->
+
             <!-- ASPECTJ COMPILE-TIME WEAVING                       -->
+
+
+            <!-- ================================================== -->
+
+            <!-- INTEGRATION TESTING / FAILSAFE                    -->
+
             <!-- ================================================== -->
 
             <plugin>
 
                 <groupId>
-                    dev.aspectj
+
+                    org.apache.maven.plugins
+
                 </groupId>
 
                 <artifactId>
-                    aspectj-maven-plugin
+
+                    maven-failsafe-plugin
+
                 </artifactId>
 
                 <version>
+
+                    3.5.6
+
+                </version>
+
+                <executions>
+
+                    <execution>
+
+                        <goals>
+
+                            <goal>
+
+                                integration-test
+
+                            </goal>
+
+                            <goal>
+
+                                verify
+
+                            </goal>
+
+                        </goals>
+
+                    </execution>
+
+                </executions>
+
+            </plugin>
+
+
+            <!-- ================================================== -->
+
+            <plugin>
+
+                <groupId>
+
+                    dev.aspectj
+
+                </groupId>
+
+                <artifactId>
+
+                    aspectj-maven-plugin
+
+                </artifactId>
+
+                <version>
+
                     1.14.1
+
                 </version>
 
 
@@ -613,38 +921,52 @@
                     <!-- Java 25 -->
 
                     <complianceLevel>
+
                         25
+
                     </complianceLevel>
 
                     <source>
+
                         25
+
                     </source>
 
                     <target>
+
                         25
+
                     </target>
 
 
                     <encoding>
+
                         UTF-8
+
                     </encoding>
 
 
                     <!-- Keep Java method parameter names -->
 
                     <parameters>
+
                         true
+
                     </parameters>
 
 
                     <!-- Useful while learning AOP -->
 
                     <showWeaveInfo>
+
                         true
+
                     </showWeaveInfo>
 
                     <verbose>
+
                         true
+
                     </verbose>
 
                 </configuration>
@@ -655,17 +977,23 @@
                     <execution>
 
                         <id>
+
                             aspectj-compile
+
                         </id>
 
                         <goals>
 
                             <goal>
+
                                 compile
+
                             </goal>
 
                             <goal>
+
                                 test-compile
+
                             </goal>
 
                         </goals>
@@ -676,15 +1004,19 @@
 
 
                 <!--
+
                     IMPORTANT:
 
                     Only aspectjtools belongs here.
 
                     log4j-api
+
                     log4j-core
+
                     aspectjrt
 
                     DO NOT belong here.
+
                 -->
 
                 <dependencies>
@@ -692,15 +1024,21 @@
                     <dependency>
 
                         <groupId>
+
                             org.aspectj
+
                         </groupId>
 
                         <artifactId>
+
                             aspectjtools
+
                         </artifactId>
 
                         <version>
+
                             ${aspectj.version}
+
                         </version>
 
                     </dependency>
@@ -709,6 +1047,257 @@
 
             </plugin>
 
+
+
+            <!-- ================================================== -->
+
+            <!-- DOCKER / SHIFT-LEFT DEVELOPMENT                    -->
+
+            <!-- ================================================== -->
+
+            <plugin>
+
+                <groupId>io.fabric8</groupId>
+
+                <artifactId>docker-maven-plugin</artifactId>
+
+                <version>0.49.0</version>
+
+                <configuration>
+
+                    <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+
+                    <containerNamePattern>%a</containerNamePattern>
+
+                    <images>
+
+                        <!-- PostgreSQL -->
+
+                        <image>
+
+                            <alias>eks-postgres</alias>
+
+                            <name>postgres:18-alpine</name>
+
+                            <run>
+
+                                <containerNamePattern>eks-postgres</containerNamePattern>
+
+                                <env>
+
+                                    <POSTGRES_DB>transactions</POSTGRES_DB>
+
+                                    <POSTGRES_USER>eksuser</POSTGRES_USER>
+
+                                    <POSTGRES_PASSWORD>ekspassword</POSTGRES_PASSWORD>
+
+                                </env>
+
+                                <ports>
+
+                                    <port>5432:5432</port>
+
+                                </ports>
+
+                                <network>
+
+                                    <mode>custom</mode>
+
+                                    <name>eks-dev</name>
+
+                                    <alias>postgres</alias>
+
+                                </network>
+
+                                <wait>
+
+                                    <log>database system is ready to accept connections</log>
+
+                                    <time>30000</time>
+
+                                </wait>
+
+                            </run>
+
+                        </image>
+
+
+                        <!-- Weather API Mock -->
+                        <image>
+                            <alias>weather-mock</alias>
+                            <name>wiremock/wiremock:3.13.2</name>
+
+                            <run>
+                                <containerNamePattern>weather-mock</containerNamePattern>
+
+                                <ports>
+                                    <port>8089:8080</port>
+                                </ports>
+
+                                <network>
+                                    <mode>custom</mode>
+                                    <name>eks-dev</name>
+                                    <alias>weather-mock</alias>
+                                </network>
+
+                                <volumes>
+                                    <bind>
+                                        <volume>${project.basedir}/src/test/resources/wiremock:/home/wiremock:ro</volume>
+                                    </bind>
+                                </volumes>
+
+                                <wait>
+                                    <http>
+                                        <url>http://localhost:8089/__admin/mappings</url>
+                                        <method>GET</method>
+                                        <status>200</status>
+                                    </http>
+                                    <time>30000</time>
+                                </wait>
+                            </run>
+                        </image>
+
+                        <!-- EKS Transaction Service -->
+
+                        <image>
+
+                            <alias>eks-app</alias>
+
+                            <name>eks-transactions-service:1.0.0</name>
+
+                            <build>
+
+                                <dockerFile>${project.basedir}/Dockerfile</dockerFile>
+
+                            </build>
+
+                            <run>
+
+                                <containerNamePattern>eks-app</containerNamePattern>
+
+                                <ports>
+
+                                    <port>8081:8080</port>
+
+                                </ports>
+
+                                <env>
+
+                                    <DB_URL>jdbc:postgresql://postgres:5432/transactions</DB_URL>
+
+                                    <DB_USER>eksuser</DB_USER>
+
+                                    <DB_PASSWORD>ekspassword</DB_PASSWORD>
+
+                                
+                                    <WEATHER_BASE_URL>http://weather-mock:8080</WEATHER_BASE_URL>
+</env>
+
+                                <network>
+
+                                    <mode>custom</mode>
+
+                                    <name>eks-dev</name>
+
+                                    <alias>eks-transactions-service</alias>
+
+                                </network>
+
+                                <dependsOn>
+
+                                    <container>eks-postgres</container>
+
+                                
+                                    <container>weather-mock</container>
+</dependsOn>
+
+                                <wait>
+
+                                    <http>
+
+                                        <url>http://localhost:8081/api/health</url>
+
+                                        <method>GET</method>
+
+                                        <status>200</status>
+
+                                    </http>
+
+                                    <time>60000</time>
+
+                                </wait>
+
+                            </run>
+
+                        </image>
+
+                    </images>
+
+                </configuration>
+
+                <executions>
+
+                    <execution>
+
+                        <id>
+
+                            docker-start-for-integration-tests
+
+                        </id>
+
+                        <phase>
+
+                            pre-integration-test
+
+                        </phase>
+
+                        <goals>
+
+                            <goal>
+
+                                build
+
+                            </goal>
+
+                            <goal>
+
+                                start
+
+                            </goal>
+
+                        </goals>
+
+                    </execution>
+
+                    <execution>
+
+                        <id>
+
+                            docker-stop-after-integration-tests
+
+                        </id>
+
+                        <phase>
+
+                            post-integration-test
+
+                        </phase>
+
+                        <goals>
+
+                            <goal>
+
+                                stop
+
+                            </goal>
+
+                        </goals>
+
+                    </execution>
+
+                </executions>
+
+            </plugin>
 
         </plugins>
 

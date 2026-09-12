@@ -1,11 +1,10 @@
 target/
-
+*.class
+*.log
 .classpath
 .project
 .settings/
-
 .idea/
-*.iml
-
-*.log
+.vscode/
 .DS_Store
+Thumbs.db

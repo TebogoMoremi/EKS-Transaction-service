@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/v1/forecast"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "latitude": -26.2041,
+      "longitude": 28.0473,
+      "timezone": "GMT",
+      "current_units": {
+        "temperature_2m": "°C",
+        "wind_speed_10m": "km/h"
+      },
+      "current": {
+        "time": "2026-09-12T10:00",
+        "temperature_2m": 20.0,
+        "wind_speed_10m": 5.0
+      }
+    }
+  }
+}

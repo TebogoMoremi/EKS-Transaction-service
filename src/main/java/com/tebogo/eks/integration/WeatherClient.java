@@ -1,6 +1,7 @@
 package com.tebogo.eks.integration;
 
 import org.apache.camel.CamelContext;
+import com.tebogo.eks.error.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 
@@ -44,7 +45,7 @@ public class WeatherClient {
 
         if (exchange.getException() != null) {
 
-            throw new RuntimeException(
+            throw new IntegrationException(
                     "integration.weather.failed",
                     exchange.getException()
             );

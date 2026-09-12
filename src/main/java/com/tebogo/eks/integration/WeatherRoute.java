@@ -8,6 +8,12 @@ public class WeatherRoute extends RouteBuilder {
     @Override
     public void configure() {
 
+        String weatherBaseUrl =
+                System.getenv().getOrDefault(
+                        "WEATHER_BASE_URL",
+                        "https://api.open-meteo.com"
+                );
+
         from("direct:weather")
 
             .routeId("weather-route")
@@ -24,14 +30,15 @@ public class WeatherRoute extends RouteBuilder {
             .setHeader(
                 Exchange.HTTP_QUERY,
                 simple(
-                    "latitude=${body.latitude}" +
-                    "&longitude=${body.longitude}" +
-                    "&current=temperature_2m,wind_speed_10m"
+                    "latitude=${body.latitude}"
+                    + "&longitude=${body.longitude}"
+                    + "&current=temperature_2m,wind_speed_10m"
                 )
             )
 
             .to(
-                "https://api.open-meteo.com/v1/forecast"
+                weatherBaseUrl
+                + "/v1/forecast"
                 + "?throwExceptionOnFailure=true"
             )
 

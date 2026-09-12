@@ -15,6 +15,7 @@
     </listener>
 
     <servlet>
+
         <servlet-name>
             JerseyServlet
         </servlet-name>
@@ -23,6 +24,7 @@
             org.glassfish.jersey.servlet.ServletContainer
         </servlet-class>
 
+        <!-- Scan our REST resources, filters and providers -->
         <init-param>
             <param-name>
                 jersey.config.server.provider.packages
@@ -35,20 +37,27 @@
             </param-value>
         </init-param>
 
+        <!-- Explicit Jersey providers -->
         <init-param>
             <param-name>
                 jersey.config.server.provider.classnames
             </param-name>
 
             <param-value>
-                org.glassfish.jersey.jackson.JacksonFeature
+                org.glassfish.jersey.jackson.JacksonFeature,
+                com.tebogo.eks.error.ValidationExceptionMapper,
+                com.tebogo.eks.error.BusinessRuleExceptionMapper,
+                com.tebogo.eks.error.IntegrationExceptionMapper,
+                com.tebogo.eks.error.GlobalExceptionMapper
             </param-value>
         </init-param>
 
         <load-on-startup>1</load-on-startup>
+
     </servlet>
 
     <servlet-mapping>
+
         <servlet-name>
             JerseyServlet
         </servlet-name>
@@ -56,6 +65,7 @@
         <url-pattern>
             /api/*
         </url-pattern>
+
     </servlet-mapping>
 
 </web-app>
