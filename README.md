@@ -2,7 +2,7 @@
 
 [![Build and Deploy to EKS](https://github.com/TebogoMoremi/EKS-Transaction-service/actions/workflows/deploy.yml/badge.svg)](https://github.com/TebogoMoremi/EKS-Transaction-service/actions/workflows/deploy.yml)
 
-Enterprise-style Java transaction processing service demonstrating REST and SOAP APIs, validation, business rules, integration patterns, persistence, containerisation, Kubernetes, AWS, and automated CI/CD.
+Enterprise-style Java transaction processing service demonstrating REST and SOAP APIs, validation, business rules, integration patterns, persistence, containerisation, Kubernetes, AWS, secure secret management, and automated CI/CD.
 
 The project processes `CASH_IN` and `CASH_OUT` transactions while maintaining a correlation ID across the complete request lifecycle.
 
@@ -10,14 +10,14 @@ The project processes `CASH_IN` and `CASH_OUT` transactions while maintaining a 
 
 ## Overview
 
-The EKS Transaction Service was built as an enterprise Java backend project demonstrating how multiple technologies can work together in a production-style transaction processing flow.
+The EKS Transaction Service is an enterprise-style Java backend project demonstrating how multiple technologies can work together in a production-oriented transaction processing flow.
 
 Transactions can be submitted through:
 
 * REST
 * SOAP
 
-SOAP requests are routed through the REST transaction API so that both interfaces reuse the same business logic.
+SOAP requests are routed through the REST transaction API so that both interfaces reuse the same transaction-processing logic.
 
 The service includes:
 
@@ -32,7 +32,10 @@ The service includes:
 * Apache Camel integration
 * Weather API integration
 * JPA / Hibernate
-* PostgreSQL
+* Amazon RDS PostgreSQL
+* AWS Secrets Manager
+* EKS Pod Identity
+* Secrets Store CSI Driver
 * Log4j2
 * AspectJ AOP
 * UUID correlation tracking
@@ -44,67 +47,78 @@ The service includes:
 * Kubernetes
 * GitHub Actions
 * GitHub OIDC authentication
-* Automated ECR publishing
-* Automated EKS deployments
+* Automated ECR image publishing
+* Automated EKS deployment
 
 ---
 
-# Architecture
+## Architecture
 
 ```text
-                         
-                               Clients       
-                                             
-                            REST / SOAP      
-                         
-                                    
-                   
-                                                    
-                                                    
-                        
-           Jersey REST API                Apache CXF SOAP 
-                        
-                                                   
-                                          SOAP  REST Adapter
-                                                   
-                   
-                                    
-                                    
-                         
-                          Correlation ID     
-                          Log4j2 + AOP       
-                         
-                                   
-                                   
-                         
-                          Validator Pattern  
-                         
-                                   
-                                   
-                         
-                          Drools Rules       
-                         
-                                   
-                                   
-                         
-                          Apache Camel       
-                          Weather Service    
-                         
-                                   
-                                   
-                         
-                          TransactionService 
-                         
-                                   
-                                   
-                         
-                          JPA / Hibernate    
-                         
-                                   
-                                   
-                         
-                          PostgreSQL         
-                         
+                        ┌────────────────────┐
+                        │      Clients       │
+                        │    REST / SOAP     │
+                        └─────────┬──────────┘
+                                  │
+                 ┌────────────────┴────────────────┐
+                 │                                 │
+                 ▼                                 ▼
+        ┌─────────────────┐              ┌─────────────────┐
+        │ Jersey REST API │              │ Apache CXF SOAP │
+        └────────┬────────┘              └────────┬────────┘
+                 │                                │
+                 │                       SOAP → REST Adapter
+                 │                                │
+                 └──────────────┬─────────────────┘
+                                │
+                                ▼
+                    ┌──────────────────────┐
+                    │ Correlation ID       │
+                    │ Log4j2 + AspectJ AOP │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ Validator Pattern    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ Drools Rules Engine  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ Apache Camel         │
+                    │ Weather Integration  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ Transaction Service  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ JPA / Hibernate      │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ EKS Pod Identity     │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ AWS Secrets Manager  │
+                    │ DB Credentials       │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ Amazon RDS           │
+                    │ PostgreSQL           │
+                    └──────────────────────┘
 ```
 
 ---
@@ -149,6 +163,10 @@ The service includes:
 * Kubernetes
 * Amazon ECR
 * Amazon EKS
+* Amazon RDS PostgreSQL
+* AWS Secrets Manager
+* EKS Pod Identity
+* Secrets Store CSI Driver
 * AWS CLI
 * kubectl
 * eksctl
@@ -161,45 +179,45 @@ The service includes:
 
 ```text
 src/
- main/
-    java/
-       com/tebogo/eks/
-           api/
-           bootstrap/
-           dto/
-           error/
-           integration/
-           logging/
-           model/
-           persistence/
-           rules/
-           service/
-           soap/
-           validation/
-   
-    resources/
-       META-INF/
-          persistence.xml
-          kmodule.xml
-       i18n/
-       log4j2.xml
-   
-    webapp/
-        WEB-INF/
-            web.xml
-
- test/
-     java/
-     resources/
-         wiremock/
+├── main/
+│   ├── java/
+│   │   └── com/tebogo/eks/
+│   │       ├── api/
+│   │       ├── bootstrap/
+│   │       ├── dto/
+│   │       ├── error/
+│   │       ├── integration/
+│   │       ├── logging/
+│   │       ├── model/
+│   │       ├── persistence/
+│   │       ├── rules/
+│   │       ├── service/
+│   │       ├── soap/
+│   │       └── validation/
+│   │
+│   ├── resources/
+│   │   ├── META-INF/
+│   │   │   ├── persistence.xml
+│   │   │   └── kmodule.xml
+│   │   ├── i18n/
+│   │   └── log4j2.xml
+│   │
+│   └── webapp/
+│       └── WEB-INF/
+│           └── web.xml
+│
+└── test/
+    ├── java/
+    └── resources/
+        └── wiremock/
 
 k8s/
- app.yaml
- postgres.yaml
+├── app.yaml
+└── rds-secret-provider.yaml
 
 .github/
- workflows/
-     deploy.yml
+└── workflows/
+    └── deploy.yml
 ```
 
 ---
@@ -312,7 +330,6 @@ Example SOAP request:
 
     <soapenv:Body>
         <tran:CreateTransaction>
-
             <tran:transactionRequest>
 
                 <correlationId>SOAP-CASHIN-001</correlationId>
@@ -352,7 +369,6 @@ Example SOAP request:
                 <sourceSystem>SOAP</sourceSystem>
 
             </tran:transactionRequest>
-
         </tran:CreateTransaction>
     </soapenv:Body>
 
@@ -370,7 +386,7 @@ ruleDecision   = APPROVED
 
 ---
 
-# SOAP  REST Integration
+# SOAP → REST Integration
 
 The SOAP layer does not duplicate transaction business logic.
 
@@ -378,19 +394,244 @@ Instead:
 
 ```text
 SOAP Client
-     
+     ↓
 Apache CXF
-     
+     ↓
 TransactionSoapServiceImpl
-     
+     ↓
 POST /api/v1/transactions
-     
+     ↓
 TransactionService
 ```
 
-This means both REST and SOAP reuse:
+Both REST and SOAP therefore reuse the same:
 
 * validation
 * Drools rules
+* Apache Camel integrations
+* persistence
+* exception handling
+* correlation ID tracking
+* logging
+* RDS database
+* business logic
 
+---
 
+# Database
+
+The application uses **Amazon RDS for PostgreSQL**.
+
+The RDS instance is deployed privately inside the same VPC as the Amazon EKS cluster and is not publicly accessible.
+
+```text
+EKS Transaction Service
+        │
+        │ PostgreSQL :5432
+        ▼
+Private Amazon RDS
+```
+
+The database used by the service is:
+
+```text
+transactions
+```
+
+The application connects using:
+
+```text
+jdbc:postgresql://<rds-endpoint>:5432/transactions
+```
+
+The RDS security group allows PostgreSQL access only from the security group used by the EKS worker nodes.
+
+The database is therefore not directly exposed to the public internet.
+
+---
+
+# AWS Secrets Manager
+
+Database credentials are managed using AWS Secrets Manager.
+
+The RDS master password is generated and managed by AWS rather than being stored directly inside:
+
+* Git
+* GitHub Actions
+* Docker images
+* Kubernetes YAML files
+* application source code
+
+The application obtains the database username and password through:
+
+```text
+Application Pod
+      ↓
+Kubernetes ServiceAccount
+      ↓
+EKS Pod Identity
+      ↓
+IAM Role
+      ↓
+AWS Secrets Manager
+      ↓
+RDS Credentials
+```
+
+The dedicated IAM role used by the application is:
+
+```text
+EKSTransactionsAppPodRole
+```
+
+It is restricted to reading only the RDS credential secret.
+
+---
+
+# EKS Pod Identity
+
+The application uses a dedicated Kubernetes service account:
+
+```text
+eks-transactions-service
+```
+
+Namespace:
+
+```text
+eks-transactions
+```
+
+The service account is associated with:
+
+```text
+EKSTransactionsAppPodRole
+```
+
+through EKS Pod Identity.
+
+This gives the application temporary AWS credentials without storing permanent AWS access keys in Kubernetes.
+
+---
+
+# Secrets Store CSI Driver
+
+The AWS Secrets Store CSI Driver mounts the RDS credentials into the application pod.
+
+Configuration:
+
+```text
+k8s/rds-secret-provider.yaml
+```
+
+The application receives:
+
+```text
+dbUsername
+dbPassword
+```
+
+as mounted files.
+
+The application reads the credentials during startup and exports them as:
+
+```text
+DB_USER
+DB_PASSWORD
+```
+
+The RDS endpoint is configured separately using:
+
+```text
+DB_URL
+```
+
+---
+
+# Secure Database Flow
+
+```text
+Amazon EKS Pod
+      ↓
+ServiceAccount
+      ↓
+EKS Pod Identity
+      ↓
+IAM Role
+      ↓
+AWS Secrets Manager
+      ↓
+Database Username + Password
+      ↓
+Amazon RDS PostgreSQL
+```
+
+No database password is stored directly in the Git repository.
+
+---
+
+# Current Infrastructure
+
+```text
+GitHub
+   ↓
+GitHub Actions
+   ↓
+OIDC Authentication
+   ↓
+AWS IAM
+   ↓
+Docker Build
+   ↓
+Amazon ECR
+   ↓
+Amazon EKS
+   ↓
+Transaction Service
+   ↓
+EKS Pod Identity
+   ↓
+AWS Secrets Manager
+   ↓
+Amazon RDS PostgreSQL
+```
+
+---
+
+# Current Project Status
+
+| Feature                  | Status |
+| ------------------------ | ------ |
+| Java 25                  | ✅      |
+| Maven                    | ✅      |
+| REST API                 | ✅      |
+| SOAP API                 | ✅      |
+| Jersey                   | ✅      |
+| Apache CXF               | ✅      |
+| Validator Pattern        | ✅      |
+| Internationalisation     | ✅      |
+| Error Handling           | ✅      |
+| Drools                   | ✅      |
+| Apache Camel             | ✅      |
+| Weather Integration      | ✅      |
+| JPA / Hibernate          | ✅      |
+| Log4j2                   | ✅      |
+| AspectJ AOP              | ✅      |
+| Correlation ID Tracking  | ✅      |
+| Unit Tests               | ✅      |
+| Integration Tests        | ✅      |
+| WireMock                 | ✅      |
+| Docker                   | ✅      |
+| Amazon ECR               | ✅      |
+| Kubernetes               | ✅      |
+| Amazon EKS               | ✅      |
+| Amazon RDS PostgreSQL    | ✅      |
+| Private RDS Networking   | ✅      |
+| AWS Secrets Manager      | ✅      |
+| EKS Pod Identity         | ✅      |
+| Secrets Store CSI Driver | ✅      |
+| GitHub Actions           | ✅      |
+| GitHub OIDC              | ✅      |
+| Automated ECR Push       | ✅      |
+| Automated EKS Deployment | ✅      |
+| Deployment Verification  | ✅      |
