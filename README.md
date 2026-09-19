@@ -635,3 +635,394 @@ Amazon RDS PostgreSQL
 | Automated ECR Push       | ✅      |
 | Automated EKS Deployment | ✅      |
 | Deployment Verification  | ✅      |
+
+# Amazon EKS Kubernetes Upgrade & Maintenance
+
+The `eks-transactions-cluster` is maintained using the Amazon EKS Kubernetes lifecycle and managed add-on upgrade process.
+
+The cluster was successfully upgraded from **Kubernetes 1.34 to Kubernetes 1.35** after receiving an AWS Health notification that standard support for Kubernetes 1.34 would end on **2 December 2026**.
+
+## Upgrade Environment
+
+```text
+AWS Region:          af-south-1
+EKS Cluster:         eks-transactions-cluster
+Managed Node Group:  app-nodes
+Operating System:    Amazon Linux 2023
+Previous Version:    Kubernetes 1.34
+Current Version:     Kubernetes 1.35
+```
+
+## Upgrade Process
+
+The upgrade was performed in stages to reduce the risk of disrupting the transaction service.
+
+```text
+AWS Health Notification
+        │
+        ▼
+Inspect EKS Cluster
+        │
+        ▼
+Check Upgrade Readiness
+        │
+        ▼
+Verify Running Workloads
+        │
+        ▼
+Upgrade EKS Control Plane
+     1.34 → 1.35
+        │
+        ▼
+Verify Control Plane
+        │
+        ▼
+Upgrade Managed Node Group
+     1.34 → 1.35
+        │
+        ▼
+Verify New Worker Node
+        │
+        ▼
+Review EKS Add-ons
+        │
+        ▼
+Upgrade kube-proxy
+        │
+        ▼
+Upgrade CoreDNS
+        │
+        ▼
+Verify Application
+        │
+        ▼
+Upgrade Complete
+```
+
+## Pre-Upgrade Checks
+
+The cluster version and status were checked before performing the upgrade:
+
+```bash
+aws eks describe-cluster \
+  --name eks-transactions-cluster \
+  --region af-south-1 \
+  --query "cluster.{Name:name,Version:version,Status:status}"
+```
+
+The cluster was initially running:
+
+```text
+Version: 1.34
+Status: ACTIVE
+```
+
+The managed node group was checked using:
+
+```bash
+aws eks describe-nodegroup \
+  --cluster-name eks-transactions-cluster \
+  --nodegroup-name app-nodes \
+  --region af-south-1 \
+  --query "nodegroup.{Name:nodegroupName,Version:version,Status:status,AmiType:amiType,ReleaseVersion:releaseVersion}"
+```
+
+The original node-group version was:
+
+```text
+Kubernetes:      1.34
+Release Version: 1.34.10-20260903
+Status:          ACTIVE
+```
+
+Cluster workloads were also verified:
+
+```bash
+kubectl get nodes -o wide
+kubectl get pods -A
+```
+
+The worker node was `Ready`, and the transaction service was running successfully before the upgrade.
+
+## EKS Upgrade Readiness
+
+Amazon EKS Upgrade Insights were checked before upgrading:
+
+```bash
+aws eks list-insights \
+  --cluster-name eks-transactions-cluster \
+  --region af-south-1
+```
+
+The EKS add-on compatibility check for Kubernetes 1.35 reported:
+
+```text
+Status: PASSING
+```
+
+This confirmed that the installed EKS add-ons were compatible with the target Kubernetes version.
+
+## Control Plane Upgrade
+
+The EKS control plane was upgraded using:
+
+```bash
+aws eks update-cluster-version \
+  --name eks-transactions-cluster \
+  --kubernetes-version 1.35 \
+  --region af-south-1
+```
+
+The upgrade was monitored until the cluster returned to:
+
+```text
+Version: 1.35
+Status: ACTIVE
+```
+
+Verification command:
+
+```bash
+aws eks describe-cluster \
+  --name eks-transactions-cluster \
+  --region af-south-1 \
+  --query "cluster.{Version:version,Status:status}"
+```
+
+## Managed Node Group Upgrade
+
+After the control-plane upgrade, the managed node group was upgraded separately.
+
+```bash
+aws eks update-nodegroup-version \
+  --cluster-name eks-transactions-cluster \
+  --nodegroup-name app-nodes \
+  --kubernetes-version 1.35 \
+  --region af-south-1
+```
+
+The update was monitored using:
+
+```bash
+aws eks list-updates \
+  --name eks-transactions-cluster \
+  --nodegroup-name app-nodes \
+  --region af-south-1
+```
+
+and:
+
+```bash
+aws eks describe-update \
+  --name eks-transactions-cluster \
+  --nodegroup-name app-nodes \
+  --region af-south-1 \
+  --update-id <UPDATE_ID>
+```
+
+The completed node group is:
+
+```text
+Status:          ACTIVE
+Version:         1.35
+Release Version: 1.35.8-20260917
+OS:              Amazon Linux 2023
+```
+
+## EKS Add-on Maintenance
+
+The cluster uses the following managed EKS add-ons:
+
+```text
+aws-secrets-store-csi-driver-provider
+coredns
+eks-pod-identity-agent
+kube-proxy
+vpc-cni
+```
+
+Installed add-ons can be listed using:
+
+```bash
+aws eks list-addons \
+  --cluster-name eks-transactions-cluster \
+  --region af-south-1
+```
+
+Compatible/default versions for Kubernetes 1.35 were checked using:
+
+```bash
+aws eks describe-addon-versions \
+  --addon-name <ADDON_NAME> \
+  --kubernetes-version 1.35 \
+  --region af-south-1
+```
+
+### kube-proxy
+
+`kube-proxy` was aligned with the Kubernetes 1.35 cluster.
+
+Target version:
+
+```text
+v1.35.3-eksbuild.29
+```
+
+Upgrade:
+
+```bash
+aws eks update-addon \
+  --cluster-name eks-transactions-cluster \
+  --addon-name kube-proxy \
+  --addon-version v1.35.3-eksbuild.29 \
+  --resolve-conflicts PRESERVE \
+  --region af-south-1
+```
+
+### CoreDNS
+
+The Kubernetes 1.35 default CoreDNS version was identified as:
+
+```text
+v1.13.2-eksbuild.31
+```
+
+Upgrade:
+
+```bash
+aws eks update-addon \
+  --cluster-name eks-transactions-cluster \
+  --addon-name coredns \
+  --addon-version v1.13.2-eksbuild.31 \
+  --resolve-conflicts PRESERVE \
+  --region af-south-1
+```
+
+### Other Add-ons
+
+The remaining add-ons were already on the Kubernetes 1.35 default versions:
+
+```text
+vpc-cni
+v1.22.4-eksbuild.3
+
+eks-pod-identity-agent
+v1.3.10-eksbuild.3
+
+aws-secrets-store-csi-driver-provider
+v3.1.3-eksbuild.1
+```
+
+No additional version changes were required for these add-ons.
+
+## Post-Upgrade Verification
+
+The worker node was verified after the managed node-group replacement:
+
+```bash
+kubectl get nodes -o wide
+```
+
+Expected state:
+
+```text
+STATUS   VERSION
+Ready    v1.35.x
+```
+
+System workloads were checked using:
+
+```bash
+kubectl get pods -n kube-system -o wide
+```
+
+Verified components included:
+
+```text
+CoreDNS                 Running
+EKS Pod Identity Agent  Running
+kube-proxy              Running
+```
+
+Application health was then checked:
+
+```bash
+kubectl get pods -n eks-transactions
+```
+
+Result:
+
+```text
+READY   STATUS    RESTARTS
+1/1     Running   0
+```
+
+The deployment was also verified:
+
+```bash
+kubectl get deployment -n eks-transactions
+```
+
+Result:
+
+```text
+NAME                       READY   UP-TO-DATE   AVAILABLE
+eks-transactions-service   1/1     1            1
+```
+
+The service remained available after the Kubernetes control-plane and worker-node upgrades.
+
+## Current EKS State
+
+```text
+eks-transactions-cluster
+│
+├── Kubernetes Control Plane
+│   └── 1.35
+│
+├── Managed Node Group
+│   └── app-nodes
+│       ├── Kubernetes 1.35
+│       ├── Amazon Linux 2023
+│       └── Release 1.35.8-20260917
+│
+├── EKS Add-ons
+│   ├── kube-proxy
+│   │   └── v1.35.3-eksbuild.29
+│   │
+│   ├── CoreDNS
+│   │   └── v1.13.2-eksbuild.31
+│   │
+│   ├── VPC CNI
+│   │   └── v1.22.4-eksbuild.3
+│   │
+│   ├── EKS Pod Identity Agent
+│   │   └── v1.3.10-eksbuild.3
+│   │
+│   └── AWS Secrets Store Provider
+│       └── v3.1.3-eksbuild.1
+│
+└── Workload
+    └── eks-transactions-service
+        └── 1/1 Running
+```
+
+## Operational Lessons
+
+This upgrade demonstrates that an Amazon EKS Kubernetes upgrade involves more than changing the control-plane version.
+
+The maintenance process includes:
+
+* reviewing AWS Health lifecycle notifications
+* checking EKS Upgrade Insights
+* verifying workloads before maintenance
+* upgrading the EKS control plane
+* upgrading managed node groups
+* reviewing EKS managed add-ons
+* aligning Kubernetes-specific components such as `kube-proxy`
+* validating CoreDNS and networking components
+* checking worker-node health
+* verifying application availability after node replacement
+
+This provides practical experience with Kubernetes lifecycle management and production-style Amazon EKS operations.
+
