@@ -12,6 +12,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+
     <!-- ====================================================== -->
 
     <!-- PROJECT INFORMATION                                    -->
@@ -25,6 +26,7 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <packaging>war</packaging>
+
 
     <!-- ====================================================== -->
 
@@ -50,6 +52,7 @@
 
         </project.reporting.outputEncoding>
 
+
         <!-- Hibernate -->
 
         <hibernate.version>
@@ -57,6 +60,7 @@
             7.4.7.Final
 
         </hibernate.version>
+
 
         <!-- PostgreSQL -->
 
@@ -66,6 +70,7 @@
 
         </postgres.version>
 
+
         <!-- Jersey -->
 
         <jersey.version>
@@ -74,9 +79,6 @@
 
         </jersey.version>
 
-        <!-- Swagger / OpenAPI -->
-
-        <swagger.version>2.2.55</swagger.version>
 
         <!-- Log4j -->
 
@@ -86,6 +88,7 @@
 
         </log4j.version>
 
+
         <!-- AspectJ -->
 
         <aspectj.version>
@@ -93,6 +96,7 @@
             1.9.25.1
 
         </aspectj.version>
+
 
         <!-- Apache Camel -->
 
@@ -102,6 +106,7 @@
 
         </camel.version>
 
+
         <!-- Drools -->
 
         <drools.version>
@@ -109,6 +114,7 @@
             10.1.0
 
         </drools.version>
+
 
         <!-- JUnit -->
 
@@ -118,6 +124,7 @@
 
         </junit.version>
 
+
         <!-- Apache CXF / SOAP -->
 
         <cxf.version>
@@ -126,7 +133,34 @@
 
         </cxf.version>
 
+
+        <!-- Swagger / OpenAPI -->
+        <swagger.version>2.2.55</swagger.version>
+
+        <!-- Jackson -->
+        <jackson.version>2.22.1</jackson.version>
     </properties>
+
+    <!-- ====================================================== -->
+    <!-- DEPENDENCY MANAGEMENT                                  -->
+    <!-- ====================================================== -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Keep all Jackson modules aligned -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+
 
     <!-- ====================================================== -->
 
@@ -135,6 +169,7 @@
     <!-- ====================================================== -->
 
     <dependencies>
+
 
         <!-- ================================================== -->
 
@@ -178,6 +213,7 @@
 
         </dependency>
 
+
         <!-- ================================================== -->
 
         <!-- REST API / JERSEY                                  -->
@@ -206,6 +242,7 @@
 
         </dependency>
 
+
         <!-- Jersey dependency injection support -->
 
         <dependency>
@@ -229,6 +266,7 @@
             </version>
 
         </dependency>
+
 
         <!-- JSON support -->
 
@@ -255,30 +293,22 @@
         </dependency>
 
         <!-- ================================================== -->
-
         <!-- OPENAPI / SWAGGER                                  -->
-
         <!-- ================================================== -->
-
         <dependency>
-
             <groupId>io.swagger.core.v3</groupId>
-
             <artifactId>swagger-jaxrs2-jakarta</artifactId>
-
             <version>${swagger.version}</version>
-
         </dependency>
 
         <dependency>
-
             <groupId>io.swagger.core.v3</groupId>
-
             <artifactId>swagger-annotations-jakarta</artifactId>
-
             <version>${swagger.version}</version>
-
         </dependency>
+
+
+
 
         <!-- ================================================== -->
 
@@ -308,6 +338,7 @@
 
         </dependency>
 
+
         <!-- ================================================== -->
 
         <!-- POSTGRESQL                                         -->
@@ -335,6 +366,7 @@
             </version>
 
         </dependency>
+
 
         <!-- ================================================== -->
 
@@ -364,6 +396,7 @@
 
         </dependency>
 
+
         <dependency>
 
             <groupId>
@@ -385,6 +418,7 @@
             </version>
 
         </dependency>
+
 
         <!--
 
@@ -417,6 +451,7 @@
             </version>
 
         </dependency>
+
 
         <!-- ================================================== -->
 
@@ -458,6 +493,7 @@
 
         </dependency>
 
+
         <!-- ================================================== -->
 
         <!-- APACHE CAMEL                                       -->
@@ -488,6 +524,7 @@
 
         </dependency>
 
+
         <!-- Allows Camel to call HTTP APIs -->
 
         <dependency>
@@ -512,6 +549,7 @@
 
         </dependency>
 
+
         <!-- JSON processing inside Camel -->
 
         <dependency>
@@ -535,6 +573,7 @@
             </version>
 
         </dependency>
+
 
         <!-- ================================================== -->
 
@@ -566,6 +605,7 @@
 
         </dependency>
 
+
         <!--
 
             Drools rule engine.
@@ -595,6 +635,7 @@
             </version>
 
         </dependency>
+
 
         <!--
 
@@ -626,6 +667,7 @@
 
         </dependency>
 
+
         <!--
 
             Required for runtime compilation of traditional DRL rules
@@ -655,6 +697,7 @@
             </version>
 
         </dependency>
+
 
         <!-- ================================================== -->
 
@@ -690,6 +733,8 @@
 
         </dependency>
 
+
+
         <!-- ================================================== -->
 
         <!-- SOAP / APACHE CXF                                  -->
@@ -720,6 +765,7 @@
 
         </dependency>
 
+
         <!-- HTTP transport used by CXF inside Tomcat -->
 
         <dependency>
@@ -746,6 +792,7 @@
 
     </dependencies>
 
+
     <!-- ====================================================== -->
 
     <!-- BUILD                                                  -->
@@ -753,6 +800,7 @@
     <!-- ====================================================== -->
 
     <build>
+
 
         <!-- WAR name -->
 
@@ -762,7 +810,9 @@
 
         </finalName>
 
+
         <plugins>
+
 
             <!-- ================================================== -->
 
@@ -814,6 +864,7 @@
 
             </plugin>
 
+
             <!-- ================================================== -->
 
             <!-- WAR                                                -->
@@ -851,6 +902,7 @@
                 </configuration>
 
             </plugin>
+
 
             <!-- ================================================== -->
 
@@ -890,9 +942,11 @@
 
             </plugin>
 
+
             <!-- ================================================== -->
 
             <!-- ASPECTJ COMPILE-TIME WEAVING                       -->
+
 
             <!-- ================================================== -->
 
@@ -946,6 +1000,7 @@
 
             </plugin>
 
+
             <!-- ================================================== -->
 
             <plugin>
@@ -967,6 +1022,7 @@
                     1.14.1
 
                 </version>
+
 
                 <configuration>
 
@@ -990,11 +1046,13 @@
 
                     </target>
 
+
                     <encoding>
 
                         UTF-8
 
                     </encoding>
+
 
                     <!-- Keep Java method parameter names -->
 
@@ -1003,6 +1061,7 @@
                         true
 
                     </parameters>
+
 
                     <!-- Useful while learning AOP -->
 
@@ -1019,6 +1078,7 @@
                     </verbose>
 
                 </configuration>
+
 
                 <executions>
 
@@ -1038,12 +1098,12 @@
 
                             </goal>
 
-
                         </goals>
 
                     </execution>
 
                 </executions>
+
 
                 <!--
 
@@ -1088,6 +1148,8 @@
                 </dependencies>
 
             </plugin>
+
+
 
             <!-- ================================================== -->
 
@@ -1160,6 +1222,7 @@
                             </run>
 
                         </image>
+
 
                         <!-- Weather API Mock -->
 
@@ -1251,6 +1314,7 @@
 
                                     <DB_PASSWORD>ekspassword</DB_PASSWORD>
 
+
                                     <WEATHER_BASE_URL>http://weather-mock:8080</WEATHER_BASE_URL>
 
 </env>
@@ -1268,6 +1332,7 @@
                                 <dependsOn>
 
                                     <container>eks-postgres</container>
+
 
                                     <container>weather-mock</container>
 
@@ -1364,5 +1429,6 @@
         </plugins>
 
     </build>
+
 
 </project>
